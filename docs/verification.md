@@ -11,7 +11,8 @@ python3 scripts/restore_data.py
 python3 -m unittest discover -s test -p '*_test.py' -v
 npm run typecheck
 npm test
-BITCOIN_BIN="$HOME/scratch/did-btc-resolver/core/bitcoin-31.1/bin" bash scripts/run-regtest.sh > "$HOME/scratch/did-btc-resolver/new-demo.json"
+mkdir -p .scratch
+BITCOIN_BIN=/path/to/bitcoin-31.1/bin bash scripts/run-regtest.sh > .scratch/lifecycle.json
 npm run resolve -- did:btc:test:xuh5-ayyy-q3q0-kp0 --esplora https://blockstream.info/testnet/api --network testnet
 ```
 
@@ -53,3 +54,7 @@ cover JSON own-property names, atomic key rollback, recovery, historical reads,
 revocation push encodings and malformed revocation payloads. Only the fixed
 creation script assertion is drawn directly from an external example; the new
 lifecycle cases are synthetic. Prior counts above describe earlier executions.
+
+## October 22 reader fixes
+
+A cold reader found that `npm run resolve -- --help` crashed with a stack trace. Every entry point now answers `--help` and rejects unknown options with a short error and usage; `test/cli.test.ts` covers this. `scripts/run-regtest.sh --keep` leaves the node running for version queries. Suite after this change: **103 discovered; offline 101 pass, 2 skipped; with the isolated Core 31.1 runner, 102 pass, 1 skipped** (live Esplora), plus the restart comparison. The three Python checks pass.

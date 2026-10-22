@@ -59,8 +59,8 @@ fresh node directory after shutdown.
 Optional existing node reproduction (Core binaries required):
 
 ```bash
-BITCOIN_BIN="$HOME/scratch/did-btc-resolver/core/bitcoin-31.1/bin" \
-  bash scripts/run-regtest.sh > "$HOME/scratch/did-btc-resolver/new-demo.json"
+mkdir -p .scratch
+BITCOIN_BIN=/path/to/bitcoin-31.1/bin bash scripts/run-regtest.sh > .scratch/lifecycle.json
 ```
 
 ## Evidence and limits

@@ -4,6 +4,16 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { rpcFromEnv, runLifecycle } from '../src/regtest.ts';
 import { resolve } from '../src/resolver.ts';
 import { RecordingSource } from '../src/sources.ts';
+import { checkUsage } from './usage.ts';
+
+const USAGE = `Usage: node scripts/regtest-proof.ts
+  Run the lifecycle on a regtest node and overwrite the committed evidence in
+  results/regtest-lifecycle.json and test/fixtures/regtest-recording.json.
+  Needs DID_BTC_RPC_URL, DID_BTC_RPC_USER and DID_BTC_RPC_PASSWORD.`;
+if (checkUsage(USAGE).length) {
+  console.error(`error: no arguments expected\n\n${USAGE}`);
+  process.exit(2);
+}
 
 const rpc = rpcFromEnv();
 const lifecycle = await runLifecycle(rpc, s => console.error(s));

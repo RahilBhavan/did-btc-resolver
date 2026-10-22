@@ -6,11 +6,11 @@ An independent TypeScript implementation of the single-DID subset of MicroStrate
 
 ## What it does
 
-- Creates a DID with an OP_RETURN subject key and optional Taproot controller UTXO; follows its spend chain through updates and deactivation.
+- Creates a DID with an OP_RETURN subject key and optional Taproot controller UTXO (the DID-UTXO; terms in the [glossary](docs/glossary.md)); follows its spend chain through updates and deactivation.
 - Resolves version IDs/times and reports malformed, missing or unsupported identifiers.
 - Checks transaction IDs, header hashes/PoW targets, Merkle roots, Taproot commitments and supported Schnorr signatures. This does **not** independently establish the canonical chain.
 - Exercises a real Bitcoin Core 31.1 regtest lifecycle, including subject-key rotation, rejection of the old credential signature and replay rejection. Saved node-confirmed evidence is in `results/regtest-lifecycle.json`; raw public chain responses can be replayed offline.
-- Passes 78 offline tests, with two optional network tests skipped. With local regtest enabled: 79 pass, one live-Esplora test skipped. These are separate executions, not additive counts.
+- Runs 103 tests: offline, 101 pass and two optional network tests skip; with the local regtest node, 102 pass and the live-Esplora test skips. These are separate executions, not additive counts.
 
 ## How it works
 
@@ -18,7 +18,7 @@ An independent TypeScript implementation of the single-DID subset of MicroStrate
 
 ## Run it
 
-Tested with Node 26.8.1 and TypeScript 7.0.2; Node 24+ is required for direct TypeScript execution. Python 3 restores the compressed fixtures. Clone into a disk-backed working directory (for example `~/scratch/did-btc-resolver/clean`) and install the locked dependencies:
+Tested with Node 26.8.1 and TypeScript 7.0.2; Node 24+ is required for direct TypeScript execution. Python 3 (standard library only) runs `scripts/restore_data.py`. The recorded chain fixtures are stored gzip-compressed and split into parts in `data/frozen/`, because a pre-commit hook keeps every committed file under 20,000 bytes. The script joins and unpacks them into `test/fixtures/` and checks their SHA-256. Run it before `npm test`.
 
 ```bash
 git clone https://github.com/RahilBhavan/did-btc-resolver.git
@@ -30,14 +30,40 @@ npm run typecheck
 npm test
 ```
 
-For the actual node-confirmed demo, obtain [Bitcoin Core 31.1](https://bitcoincore.org/en/releases/31.1/) and verify its download checksums. Set `BITCOIN_BIN` to your extracted `bin` directory; for example:
+Every entry point prints its usage with `--help`, for example `npm run resolve -- --help`.
+
+### Regtest demo
+
+Get [Bitcoin Core 31.1](https://bitcoincore.org/en/releases/31.1/) and verify its download checksums. Set `BITCOIN_BIN` to the extracted `bin` directory:
 
 ```bash
-BITCOIN_BIN="$HOME/scratch/did-btc-resolver/core/bitcoin-31.1/bin" \
-  bash scripts/run-regtest.sh > "$HOME/scratch/did-btc-resolver/new-demo.json"
+mkdir -p .scratch
+BITCOIN_BIN=/path/to/bitcoin-31.1/bin bash scripts/run-regtest.sh --keep > .scratch/lifecycle.json
 ```
 
-This starts a disposable regtest node on loopback port 18643 with P2P disabled, runs the integration tests, prints lifecycle JSON, restarts the same chain and checks current/historical resolution, then stops/removes that node. It mines test coins only. Port 18643 must be free. Fresh random keys and block timestamps make transaction IDs differ between runs; the lifecycle assertions are reproducible.
+The script starts a regtest node in `.scratch/` (git-ignored) on loopback port 18643 with P2P disabled. It runs the regtest tests, then `npm run demo`. The demo creates a DID, checks a credential signature, rotates the subject key in an update, deactivates the DID, checks that replaying an old transaction is rejected and prints each step as JSON. Then it restarts the node and checks current and historical resolution again. It mines test coins only. Port 18643 must be free. Fresh random keys and block timestamps make transaction IDs differ between runs; the lifecycle assertions are reproducible.
+
+Without `--keep`, the script stops the node and deletes its data. With `--keep`, the node stays up and the script prints the environment for `npm run resolve` and the command that stops the node. `npm run demo` also runs on its own against a regtest node started with `txindex=1` and `txospenderindex=1` (it creates its own wallet), given `DID_BTC_RPC_URL`, `DID_BTC_RPC_USER` and `DID_BTC_RPC_PASSWORD`.
+
+The DID prints as `did:btc:test:q…`. The draft defines only `did:btc:` (mainnet) and `did:btc:test:` (testnet). This project reuses the `test:` prefix for regtest and marks the network in the TxRef: regtest TxRefs start with `q` or `p`, testnet TxRefs with `x` or `8`. This is a local extension, not part of the draft (see the [glossary](docs/glossary.md)).
+
+### Query a past version
+
+With the `--keep` node running and its environment exported, resolve the demo DID as it was before deactivation. `--version-id 0` is the creation; each later update or deactivation adds one. `--version-time <ISO date-time>` selects by block time instead. Real output from one run, shortened with `jq`:
+
+```bash
+DID=did:btc:test:qq8q-qqpq-q0vh-38f   # use the DID that your run printed
+npm run -s resolve -- $DID --version-id 1 | jq -c '{versionId: .didDocumentMetadata.versionId, keys: [.didDocument.verificationMethod[].publicKeyMultibase], service: [.didDocument.service[].id]}'
+# {"versionId":"1","keys":["z6MkmqvGUFRTRsihD615tgkf7v7bSPACzDWaf7EX49jE6YCJ"],"service":["did:btc:test:qq8q-qqpq-q0vh-38f#demo"]}
+npm run -s resolve -- $DID --version-id 0 | jq -c '{versionId: .didDocumentMetadata.versionId, keys: [.didDocument.verificationMethod[].publicKeyMultibase]}'
+# {"versionId":"0","keys":["z6MknqFCGtxHEuHi4yQgnay89GCmgwHBKoFoVtZznMZXb2D9"]}
+npm run -s resolve -- $DID | jq -c '{deactivated: .didDocumentMetadata.deactivated, didDocument}'
+# {"deactivated":true,"didDocument":null}
+```
+
+Version 0 holds the original subject key. Version 1 holds the rotated key and the added service. The current resolution has no document, because the DID is deactivated.
+
+### Public testnet example
 
 To resolve the upstream public testnet example read-only:
 
@@ -55,12 +81,14 @@ That command requires network availability. Ordinary tests use frozen data. [Ver
 - `data/frozen/` — compressed fixture parts and original-byte hashes.
 - `results/` — node-confirmed lifecycle receipt, with no keys or RPC credentials.
 - `scripts/` — snapshot restoration, source recording and disposable regtest runner.
+- `.scratch/` — git-ignored; regtest node data and test temporaries, created on demand.
 - `docs/` — scope, spec mapping, sources and verification.
 
 ## Documentation
 
 - [Public design system](DESIGN.md): Rahil Design 3.3.0, shared tokens and visual review rules.
 
+- [Glossary](docs/glossary.md) — TxRef, OP_RETURN subject key, DID-UTXO, versions and the regtest DID convention.
 - [Scope and acceptance](docs/spec.md) — agreed local v1.
 - [Specification mapping](docs/specification.md) — implemented subset and draft ambiguities.
 - [Sources](docs/sources.md) — pinned upstream sources and recorded evidence.

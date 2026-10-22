@@ -7,7 +7,11 @@ Run from any directory: python scripts/restore_data.py
 import gzip
 import hashlib
 import json
+import sys
 from pathlib import Path
+
+USAGE = """Usage: python3 scripts/restore_data.py
+  Unpack the recorded chain fixtures in data/frozen/ into test/fixtures/, checking SHA-256."""
 
 ROOT = Path(__file__).resolve().parents[1]
 FROZEN = ROOT / "data/frozen"
@@ -30,4 +34,12 @@ def restore(root=ROOT):
 
 
 if __name__ == "__main__":
+    args = sys.argv[1:]
+    if "--help" in args or "-h" in args:
+        print(USAGE)
+        sys.exit(0)
+    if args:
+        kind = "unknown option" if args[0].startswith("-") else "unexpected argument"
+        print(f"error: {kind} {args[0]}\n\n{USAGE}", file=sys.stderr)
+        sys.exit(2)
     print(f"Restored {restore()} frozen source files (SHA-256 checked)")

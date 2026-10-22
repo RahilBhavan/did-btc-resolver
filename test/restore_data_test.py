@@ -13,8 +13,8 @@ spec.loader.exec_module(module)
 
 class SnapshotTests(unittest.TestCase):
     def setUp(self):
-        scratch = Path.home() / "scratch/did-btc-resolver"
-        scratch.mkdir(parents=True, exist_ok=True)
+        scratch = Path(__file__).resolve().parents[1] / ".scratch"
+        scratch.mkdir(exist_ok=True)
         self.temp = tempfile.TemporaryDirectory(dir=scratch, prefix="snapshot-test.")
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)

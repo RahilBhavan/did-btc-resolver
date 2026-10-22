@@ -18,7 +18,7 @@ python3 scripts/restore_data.py
 python3 -m unittest discover -s test -p '*_test.py' -v
 npm run typecheck
 npm test
-BITCOIN_BIN="$HOME/scratch/did-btc-resolver/core/bitcoin-31.1/bin" bash scripts/run-regtest.sh
+BITCOIN_BIN=/path/to/bitcoin-31.1/bin bash scripts/run-regtest.sh
 ```
 
 Observed with Node 26.8.1 / TypeScript 7.0.2 / Core 31.1:
