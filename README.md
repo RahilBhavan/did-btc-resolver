@@ -59,6 +59,8 @@ That command requires network availability. Ordinary tests use frozen data. [Ver
 
 ## Documentation
 
+- [Public design system](DESIGN.md): Rahil Design 3.3.0, shared tokens and visual review rules.
+
 - [Scope and acceptance](docs/spec.md) — agreed local v1.
 - [Specification mapping](docs/specification.md) — implemented subset and draft ambiguities.
 - [Sources](docs/sources.md) — pinned upstream sources and recorded evidence.

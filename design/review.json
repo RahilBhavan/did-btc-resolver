@@ -1,0 +1,15 @@
+{
+  "design_authority": "rahil-design",
+  "version": "3.3.0",
+  "tokens_sha256": "d68805efd223fc8c3deb715e9ef240ae633a740c69993959ccf3dd13c140c05b",
+  "scope": "Public project artifacts; existing CLI/protocol/calculation behavior retained.",
+  "surfaces": [],
+  "changes": [
+    "Required skill routing in AGENTS.md",
+    "Portable DESIGN.md contract",
+    "Unchanged canonical token snapshot",
+    "README design link"
+  ],
+  "review": "CLI-only project. Voice and future public-visual routing are covered; no decorative UI added.",
+  "font_limit": "No current rendered UI."
+}
