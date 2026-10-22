@@ -59,7 +59,9 @@ export function p2trOutputKey(outputScript: Uint8Array | undefined): Uint8Array 
 }
 
 export function isDeactivation(tx: Transaction): boolean {
-  return tx.outs.length > 0 && equalBytes(tx.outs[0].script, DEACTIVATION_SCRIPT);
+  const chunks = tx.outs[0] && script.decompile(tx.outs[0].script);
+  return !!chunks && chunks.length === 2 && chunks[0] === opcodes.OP_RETURN
+    && chunks[1] instanceof Uint8Array && equalBytes(chunks[1], Uint8Array.of(0x64));
 }
 
 // ---------- update envelope ----------

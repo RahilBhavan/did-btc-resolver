@@ -34,6 +34,13 @@ export function controllerDidKey(xOnly: Uint8Array): string {
   return `did:key:${encodeMultikey({ type: 'secp256k1', bytes: Uint8Array.from([0x02, ...xOnly]) })}`;
 }
 
+// JSON member names are data, including __proto__; assignment would invoke its setter.
+function setJsonProperty(target: Record<string, unknown>, name: string, value: unknown): void {
+  Object.defineProperty(target, name, {
+    value: structuredClone(value), enumerable: true, writable: true, configurable: true,
+  });
+}
+
 export function buildDidDocument(did: string, state: DidState): DidDocument {
   const vmId = (i: number) => `${did}#key-${i}`;
   const doc: DidDocument = {
@@ -51,7 +58,7 @@ export function buildDidDocument(did: string, state: DidState): DidDocument {
     const refs = state.keys.flatMap((k, i) => (k.flags & VR[rel] ? [vmId(i)] : []));
     if (refs.length) doc[rel] = refs;
   }
-  for (const [k, v] of Object.entries(state.properties)) doc[k] = structuredClone(v);
+  for (const [k, v] of Object.entries(state.properties)) setJsonProperty(doc, k, v);
   return doc;
 }
 
@@ -85,7 +92,7 @@ export function applyUpdate(state: DidState, update: DidUpdate): DidState {
   for (const obj of update.d ?? []) {
     for (const [name, value] of Object.entries(obj)) {
       checkKey(name);
-      if (!(name in next.properties)) throw new ProtocolError(`cannot delete missing property "${name}"`);
+      if (!Object.hasOwn(next.properties, name)) throw new ProtocolError(`cannot delete missing property "${name}"`);
       const current = next.properties[name];
       if (Array.isArray(current) && Array.isArray(value)) {
         for (const item of value) {
@@ -103,7 +110,7 @@ export function applyUpdate(state: DidState, update: DidUpdate): DidState {
   for (const obj of update.u ?? []) {
     for (const [name, value] of Object.entries(obj)) {
       checkKey(name);
-      if (!(name in next.properties)) throw new ProtocolError(`cannot update missing property "${name}"`);
+      if (!Object.hasOwn(next.properties, name)) throw new ProtocolError(`cannot update missing property "${name}"`);
       const current = next.properties[name];
       if (Array.isArray(current) && Array.isArray(value)) {
         for (const item of value) {
@@ -113,16 +120,16 @@ export function applyUpdate(state: DidState, update: DidUpdate): DidState {
           current[idx] = { ...(current[idx] as object), ...(item as object) };
         }
       } else {
-        next.properties[name] = value;
+        setJsonProperty(next.properties, name, value);
       }
     }
   }
   for (const obj of update.a ?? []) {
     for (const [name, value] of Object.entries(obj)) {
       checkKey(name);
-      const current = next.properties[name];
+      const current = Object.hasOwn(next.properties, name) ? next.properties[name] : undefined;
       if (current === undefined) {
-        next.properties[name] = structuredClone(value);
+        setJsonProperty(next.properties, name, value);
       } else if (Array.isArray(current) && Array.isArray(value)) {
         for (const item of value) {
           const id = entryId(item);

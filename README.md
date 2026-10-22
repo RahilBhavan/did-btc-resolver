@@ -10,7 +10,7 @@ An independent TypeScript implementation of the single-DID subset of MicroStrate
 - Resolves version IDs/times and reports malformed, missing or unsupported identifiers.
 - Checks transaction IDs, header hashes/PoW targets, Merkle roots, Taproot commitments and supported Schnorr signatures. This does **not** independently establish the canonical chain.
 - Exercises a real Bitcoin Core 31.1 regtest lifecycle, including subject-key rotation, rejection of the old credential signature and replay rejection. Saved node-confirmed evidence is in `results/regtest-lifecycle.json`; raw public chain responses can be replayed offline.
-- Passes 56 offline tests, with two optional network tests skipped. With local regtest enabled: 57 pass, one live-Esplora test skipped. These are separate executions, not additive counts.
+- Passes 78 offline tests, with two optional network tests skipped. With local regtest enabled: 79 pass, one live-Esplora test skipped. These are separate executions, not additive counts.
 
 ## How it works
 
@@ -65,6 +65,7 @@ That command requires network availability. Ordinary tests use frozen data. [Ver
 - [Specification mapping](docs/specification.md) — implemented subset and draft ambiguities.
 - [Sources](docs/sources.md) — pinned upstream sources and recorded evidence.
 - [Correctness review](docs/review.md) — proven fixes and remaining trust boundaries.
+- [Conformance improvements](docs/improvement-plan.md) — property-update rollback, revocation encodings and a five-minute reproduction.
 - [Verification](docs/verification.md) — exact checks and trust boundaries.
 - [Publication](docs/publication.md) — fresh-clone checks and reviewed regtest receipt.
 

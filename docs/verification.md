@@ -40,3 +40,16 @@ The credential purpose regression failed before the fix (an authentication-only 
 GitHub Actions uses pinned action commits, Node 26.8.1, Python 3.13.7, read-only repository permission and a 10-minute timeout. Installation uses the network; fixture restoration, typecheck and test steps use offline inputs. CI does not download or run Core and does not claim to verify the optional live Esplora API.
 
 The publication continuation also ran the same Core demo from a fresh GitHub clone. Its new transaction IDs and results are saved in `results/reviewed-regtest-lifecycle.json`; [publication.md](publication.md) records the source commit and receipt hash.
+
+
+## October 22 conformance slice
+
+The [improvement record](improvement-plan.md) contains the bounded acceptance
+conditions, failing-before/fixed-after cases, source distinctions and five-minute
+example. Current suite: **80 discovered, 78 offline pass, 2 skipped**; with the
+isolated Core runner, **79 pass, 1 skipped**, plus successful restart comparison.
+Typecheck, hash-checked restoration and all three Python checks pass. New cases
+cover JSON own-property names, atomic key rollback, recovery, historical reads,
+revocation push encodings and malformed revocation payloads. Only the fixed
+creation script assertion is drawn directly from an external example; the new
+lifecycle cases are synthetic. Prior counts above describe earlier executions.
