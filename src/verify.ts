@@ -1,4 +1,4 @@
-// Checks that make chain-source answers trustworthy without trusting the source:
+// Consistency checks on chain-source answers (the source remains chain authority):
 //  - block header hashes to the claimed block hash and meets its own proof-of-work target;
 //  - the txid list hashes to the header's merkle root, and the tx sits at the claimed index;
 //  - raw transaction bytes hash to the claimed txid;

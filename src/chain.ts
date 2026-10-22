@@ -1,5 +1,5 @@
-// The resolver reads the chain through this interface and treats every answer as untrusted:
-// see src/verify.ts for the checks applied to each response.
+// The resolver checks response consistency through src/verify.ts. This source still chooses
+// the canonical chain, claimed heights and spend completeness; it is a trust boundary.
 
 export interface BlockInfo {
   hash: string;

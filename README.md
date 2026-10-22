@@ -8,7 +8,7 @@ An independent TypeScript implementation of the single-DID subset of MicroStrate
 - Resolves version IDs/times and reports malformed, missing or unsupported identifiers.
 - Checks transaction IDs, header hashes/PoW targets, Merkle roots, Taproot commitments and supported Schnorr signatures. This does **not** independently establish the canonical chain.
 - Exercises a real Bitcoin Core 31.1 regtest lifecycle, including subject-key rotation, rejection of the old credential signature and replay rejection. Saved node-confirmed evidence is in `results/regtest-lifecycle.json`; raw public chain responses can be replayed offline.
-- Passes 53 offline tests, with two optional network tests skipped. With local regtest enabled: 54 pass, one live-Esplora test skipped. These are separate executions, not additive counts.
+- Passes 56 offline tests, with two optional network tests skipped. With local regtest enabled: 57 pass, one live-Esplora test skipped. These are separate executions, not additive counts.
 
 ## How it works
 
@@ -16,28 +16,26 @@ An independent TypeScript implementation of the single-DID subset of MicroStrate
 
 ## Run it
 
-Tested with Node 26.8.1 and TypeScript 7.0.2; Node 24+ is required for direct TypeScript execution. Python 3 restores the compressed fixtures. Install dependencies on disk under scratch:
+Tested with Node 26.8.1 and TypeScript 7.0.2; Node 24+ is required for direct TypeScript execution. Python 3 restores the compressed fixtures. Clone into a disk-backed working directory (for example `~/scratch/did-btc-resolver/clean`) and install the locked dependencies:
 
 ```bash
-cd /home/rahil/projects/did-btc-resolver
-mkdir -p "$HOME/scratch/did-btc-resolver/deps"
-cp package.json package-lock.json "$HOME/scratch/did-btc-resolver/deps/"
-npm ci --prefix "$HOME/scratch/did-btc-resolver/deps"
-# Create this link only if node_modules does not already exist.
-test -e node_modules || ln -s "$HOME/scratch/did-btc-resolver/deps/node_modules" node_modules
+git clone https://github.com/RahilBhavan/did-btc-resolver.git
+cd did-btc-resolver
+npm ci
 python3 scripts/restore_data.py
+python3 -m unittest discover -s test -p '*_test.py' -v
 npm run typecheck
 npm test
 ```
 
-For the actual node-confirmed demo, obtain [Bitcoin Core 31.1](https://bitcoincore.org/en/releases/31.1/) and verify its download checksums. The already verified local binary is under the scratch path below:
+For the actual node-confirmed demo, obtain [Bitcoin Core 31.1](https://bitcoincore.org/en/releases/31.1/) and verify its download checksums. Set `BITCOIN_BIN` to your extracted `bin` directory; for example:
 
 ```bash
 BITCOIN_BIN="$HOME/scratch/did-btc-resolver/core/bitcoin-31.1/bin" \
   bash scripts/run-regtest.sh > "$HOME/scratch/did-btc-resolver/new-demo.json"
 ```
 
-This starts a disposable regtest node on loopback port 18643 with P2P disabled, runs the integration tests, prints lifecycle JSON and stops/removes that node. It mines test coins only. Port 18643 must be free. Fresh random keys and block timestamps make transaction IDs differ between runs; the lifecycle assertions are reproducible.
+This starts a disposable regtest node on loopback port 18643 with P2P disabled, runs the integration tests, prints lifecycle JSON, restarts the same chain and checks current/historical resolution, then stops/removes that node. It mines test coins only. Port 18643 must be free. Fresh random keys and block timestamps make transaction IDs differ between runs; the lifecycle assertions are reproducible.
 
 To resolve the upstream public testnet example read-only:
 
@@ -62,6 +60,7 @@ That command requires network availability. Ordinary tests use frozen data. [Ver
 - [Scope and acceptance](docs/spec.md) — agreed local v1.
 - [Specification mapping](docs/specification.md) — implemented subset and draft ambiguities.
 - [Sources](docs/sources.md) — pinned upstream sources and recorded evidence.
+- [Correctness review](docs/review.md) — proven fix and remaining trust boundaries.
 - [Verification](docs/verification.md) — exact checks and trust boundaries.
 
 ## Sources
