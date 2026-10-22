@@ -204,3 +204,25 @@ describe('deactivate', () => {
     assert.equal(r.didDocument!.controller, controllerOf(next));
   });
 });
+
+it('keeps historical controller state stable after a later key-path transfer', async () => {
+  const c = createDid();
+  update(c, { vm: [{ i: 0, k: edKey(1).multikey }] });
+  const before = await resolve(c.did, c.chain);
+  const next = new TaprootSigner(secret(88));
+  const tx = new Transaction();
+  tx.version = 2;
+  tx.addInput(Uint8Array.from(Buffer.from(c.didUtxo.txid, 'hex')).reverse(), 0);
+  tx.addOutput(next.outputScript, c.didUtxo.value - 500n);
+  c.controller.signKeyPath(tx, 0, [c.controller.outputScript], [c.didUtxo.value]);
+  c.chain.mine([tx]);
+  const historical = await resolve(c.did, c.chain, { versionTime: String(before.didDocumentMetadata.updated) });
+  assert.equal(historical.didDocument?.controller, before.didDocument?.controller);
+  const byId = await resolve(c.did, c.chain, { versionId: '1' });
+  assert.equal(byId.didDocument?.controller, before.didDocument?.controller);
+  const current = await resolve(c.did, c.chain);
+  assert.notEqual(current.didDocument?.controller, before.didDocument?.controller);
+  const afterTransfer = new Date(c.chain.time * 1000).toISOString();
+  assert.equal((await resolve(c.did, c.chain, { versionTime: afterTransfer })).didDocument?.controller,
+    current.didDocument?.controller);
+});

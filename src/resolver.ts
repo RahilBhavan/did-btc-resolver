@@ -51,6 +51,8 @@ export interface DidHistory {
   /** Outpoint that controls future updates, or null if the DID is final or deactivated. */
   didUtxo: { txid: string; vout: number } | null;
   tipHeight: number;
+  /** Controller changes include transfers that do not create a payload version. In chain order. */
+  controllers: { time: number; key: Uint8Array | null }[];
   /** Envelopes on the DID UTXO chain that were ignored, with the reason. */
   ignored: { txid: string; reason: string }[];
 }
@@ -126,6 +128,7 @@ export async function readHistory(did: string, source: ChainSource, minCreateCon
       deactivated: false,
     },
   ];
+  const controllers: DidHistory['controllers'] = [{ time: block.time, key: createKey }];
   const ignored: DidHistory['ignored'] = [];
   let didUtxo: DidHistory['didUtxo'] = createKey ? { txid: createTxid, vout: 1 } : null;
 
@@ -141,6 +144,8 @@ export async function readHistory(did: string, source: ChainSource, minCreateCon
     const path = await verifyTaprootSpend(source, tx, inputIndex);
     const latest = versions[versions.length - 1];
     const nextKey = p2trOutputKey(tx.outs[0]?.script);
+
+    controllers.push({ time: spendBlock.time, key: isDeactivation(tx) ? null : nextKey });
 
     if (isDeactivation(tx)) {
       versions.push({ versionId: String(versions.length), txid: spend.txid, blockHeight: spendBlock.height, time: spendBlock.time, state: { ...latest.state, controllerKey: null }, deactivated: true });
@@ -164,17 +169,7 @@ export async function readHistory(did: string, source: ChainSource, minCreateCon
     didUtxo = nextKey ? { txid: spend.txid, vout: 0 } : null;
   }
 
-  // The latest version's controller is whatever key holds the DID UTXO now (commit outputs and
-  // plain key-path transfers move it without creating a new document version).
-  const last = versions[versions.length - 1];
-  if (!last.deactivated) {
-    if (!didUtxo) last.state.controllerKey = null;
-    else {
-      const holder = await fetchVerifiedTx(source, didUtxo.txid);
-      last.state.controllerKey = p2trOutputKey(holder.outs[didUtxo.vout].script);
-    }
-  }
-  return { parsed, createTxid, versions, didUtxo, tipHeight, ignored };
+  return { parsed, createTxid, versions, didUtxo, tipHeight, controllers, ignored };
 }
 
 function selectVersion(versions: Version[], options: ResolveOptions): number {
@@ -220,7 +215,7 @@ export async function resolve(did: string, source: ChainSource, options: Resolve
   }
   const { versions } = history;
   const v = versions[index];
-  const isLatest = index === versions.length - 1;
+  const isLatest = index === versions.length - 1 && options.versionId === undefined && options.versionTime === undefined;
   const next = versions[index + 1];
   const documentMetadata: Record<string, unknown> = {
     created: iso(versions[0].time),
@@ -239,8 +234,15 @@ export async function resolve(did: string, source: ChainSource, options: Resolve
       ...(history.ignored.length ? { ignoredUpdates: history.ignored } : {}),
     },
   };
+  let controllerKey = v.state.controllerKey;
+  // A versionId selects the immutable payload-event snapshot. Time/current queries also
+  // account for plain transfers, without renumbering existing payload versions.
+  if (options.versionId === undefined) {
+    const cutoff = options.versionTime === undefined ? Infinity : Date.parse(options.versionTime) / 1000;
+    for (const event of history.controllers) if (event.time <= cutoff) controllerKey = event.key;
+  }
   return {
-    didDocument: v.deactivated ? null : buildDidDocument(did, v.state),
+    didDocument: v.deactivated ? null : buildDidDocument(did, { ...v.state, controllerKey }),
     didResolutionMetadata: v.deactivated ? {} : { contentType: 'application/did+ld+json' },
     didDocumentMetadata: documentMetadata,
   };

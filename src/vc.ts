@@ -71,7 +71,7 @@ export function verifyEddsaJcs2022(secured: Json, publicKey: Uint8Array): Verify
     return { verified: false, reason: 'proofValue is not base58' };
   }
   if (sig.length !== 64) return { verified: false, reason: 'signature must be 64 bytes' };
-  const ok = ed25519.verify(sig, hashData(unsecured, options), publicKey);
+  const ok = ed25519.verify(sig, hashData(unsecured, options), publicKey, { zip215: false });
   return ok ? { verified: true } : { verified: false, reason: 'signature does not verify' };
 }
 
@@ -84,7 +84,8 @@ export async function verifyCredential(credential: Json, source: ChainSource, re
   const proof = credential.proof as Json | undefined;
   if (!proof || typeof proof.verificationMethod !== 'string') return { verified: false, reason: 'no proof.verificationMethod' };
   const vmId = proof.verificationMethod;
-  const purpose = String(proof.proofPurpose ?? '');
+  const purpose = proof.proofPurpose;
+  if (purpose !== 'assertionMethod') return { verified: false, reason: 'credential proofPurpose must be assertionMethod' };
   const issuer = typeof credential.issuer === 'string' ? credential.issuer : (credential.issuer as Json | undefined)?.id;
   const did = vmId.split('#')[0];
   if (issuer !== did) return { verified: false, reason: 'verificationMethod does not belong to the issuer' };

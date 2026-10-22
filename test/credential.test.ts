@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { base58 } from '@scure/base';
+import { encodeMultikey } from '../src/multikey.ts';
 import { VR } from '../src/protocol.ts';
 import { hashData, signEddsaJcs2022, verifyCredential, verifyEddsaJcs2022 } from '../src/vc.ts';
 import { createDid, deactivate, edKey, update } from './support/scenario.ts';
@@ -82,6 +83,12 @@ describe('credentials issued by a did:btc DID', () => {
     assert.match(result.reason!, /not authorized for assertionMethod/);
   });
 
+  it('rejects an authentication proof even when the signer is authorized to authenticate', async () => {
+    const c = createDid({ flags: VR.authentication });
+    const result = await verifyCredential(issue(c.did, c.subject.secretKey, 0, 'authentication'), c.chain);
+    assert.deepEqual(result, { verified: false, reason: 'credential proofPurpose must be assertionMethod' });
+  });
+
   it('rejects a credential that names a different issuer than its key', async () => {
     const c = createDid();
     const vc = issue(c.did, c.subject.secretKey);
@@ -97,6 +104,24 @@ describe('credentials issued by a did:btc DID', () => {
     assert.deepEqual(await verifyCredential(old, c.chain), { verified: false, reason: 'signature does not verify' });
     assert.deepEqual(await verifyCredential(old, c.chain, { versionId: '0' }), { verified: true });
     assert.deepEqual(await verifyCredential(issue(c.did, k1.secretKey), c.chain), { verified: true });
+  });
+
+  it('rejects no-secret signatures made with an anchored identity-point Ed25519 key', async () => {
+    const c = createDid();
+    const identity = new Uint8Array(32);
+    identity[0] = 1;
+    update(c, { vm: [{ i: 0, k: encodeMultikey({ type: 'ed25519', bytes: identity }) }] });
+    const signature = new Uint8Array(64);
+    signature[0] = 1;
+    for (const role of ['student', 'admin']) {
+      const forged = {
+        issuer: c.did, credentialSubject: { role },
+        proof: { type: 'DataIntegrityProof', cryptosuite: 'eddsa-jcs-2022',
+          verificationMethod: `${c.did}#key-0`, proofPurpose: 'assertionMethod',
+          proofValue: 'z' + base58.encode(signature) },
+      };
+      assert.equal((await verifyCredential(forged, c.chain)).verified, false);
+    }
   });
 
   it('rejects credentials from a deactivated issuer', async () => {
