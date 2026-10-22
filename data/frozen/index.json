@@ -1,0 +1,20 @@
+[
+ {
+  "path": "test/fixtures/regtest-recording.json",
+  "bytes": 5338,
+  "sha256": "4528f5588bad7ecc7eb31c9746d7992a30e4144cbec139a4a4469ba4aa468983",
+  "parts": [
+   "000-000.gzpart"
+  ]
+ },
+ {
+  "path": "test/fixtures/spec-example-testnet.json",
+  "bytes": 76947,
+  "sha256": "4d49b902cd9d54f90443537762778a37bf59f885d969b80295a6976bd53ca015",
+  "parts": [
+   "001-000.gzpart",
+   "001-001.gzpart",
+   "001-002.gzpart"
+  ]
+ }
+]

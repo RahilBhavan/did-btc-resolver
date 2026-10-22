@@ -1,0 +1,29 @@
+{
+  "name": "did-btc-resolver",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Independent did:btc (MicroStrategy draft spec) resolver, creator and credential verifier for Bitcoin test networks",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "test": "node --test 'test/*.test.ts'",
+    "test:regtest": "DID_BTC_REGTEST=1 node --test --test-concurrency=1 'test/*.test.ts'",
+    "typecheck": "tsc --noEmit",
+    "resolve": "node src/cli.ts resolve",
+    "demo": "node src/cli.ts demo"
+  },
+  "dependencies": {
+    "@noble/curves": "^2.0.1",
+    "@noble/hashes": "^2.0.1",
+    "@scure/base": "^2.0.0",
+    "bitcoinjs-lib": "^7.0.1",
+    "canonicalize": "^2.1.0",
+    "tiny-secp256k1": "^2.2.4"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "typescript": "^7.0.2"
+  }
+}

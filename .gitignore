@@ -1,0 +1,16 @@
+node_modules/
+.env
+*.log
+
+/test/fixtures/spec-example-testnet.json
+/test/fixtures/regtest-recording.json
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+
+*.log
+
+.venv
+node_modules

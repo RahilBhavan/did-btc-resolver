@@ -1,0 +1,231 @@
+{
+  "evidenceKind": "node-confirmed regtest lifecycle, not public-network proof",
+  "coreVersion": "31.1",
+  "asOf": "2026-10-22T01:20:35.509Z",
+  "chain": "regtest",
+  "did": "did:btc:test:qygq-qqpq-qg2z-rt4",
+  "steps": [
+    {
+      "step": "create",
+      "txids": [
+        "8bfb33c12fc0fef64eef6632e20dcb1fc0891736b681ed277e8071cd9f1eaa8c"
+      ],
+      "resolution": {
+        "didDocument": {
+          "@context": [
+            "https://www.w3.org/ns/did/v1",
+            "https://w3id.org/security/multikey/v1"
+          ],
+          "id": "did:btc:test:qygq-qqpq-qg2z-rt4",
+          "controller": "did:key:zQ3shTWkUhBxqWZMShdeCmD6SSTbXYbrURU6aizU5AaJzySFo",
+          "verificationMethod": [
+            {
+              "id": "did:btc:test:qygq-qqpq-qg2z-rt4#key-0",
+              "type": "Multikey",
+              "controller": "did:btc:test:qygq-qqpq-qg2z-rt4",
+              "publicKeyMultibase": "z6MkjN6B6gMPXAKRyMYQGmyTd4SxQYi5UVrjNUBxy5sX6Ynd"
+            }
+          ],
+          "authentication": [
+            "did:btc:test:qygq-qqpq-qg2z-rt4#key-0"
+          ],
+          "assertionMethod": [
+            "did:btc:test:qygq-qqpq-qg2z-rt4#key-0"
+          ]
+        },
+        "didResolutionMetadata": {
+          "contentType": "application/did+ld+json"
+        },
+        "didDocumentMetadata": {
+          "created": "2026-10-22T01:20:35Z",
+          "versionId": "0",
+          "btc": {
+            "network": "regtest",
+            "createTxid": "8bfb33c12fc0fef64eef6632e20dcb1fc0891736b681ed277e8071cd9f1eaa8c",
+            "blockHeight": 130,
+            "txIndex": 1,
+            "versionTxid": "8bfb33c12fc0fef64eef6632e20dcb1fc0891736b681ed277e8071cd9f1eaa8c",
+            "confirmations": 6,
+            "didUtxo": "8bfb33c12fc0fef64eef6632e20dcb1fc0891736b681ed277e8071cd9f1eaa8c:1",
+            "final": false
+          }
+        }
+      }
+    },
+    {
+      "step": "verify credential signed with key-0",
+      "txids": [],
+      "credential": {
+        "label": "vc0",
+        "verified": true
+      }
+    },
+    {
+      "step": "update",
+      "txids": [
+        "a24f7ce497c06930b5316f01c683b5eaf2993307e390d6df5b28a6013b6349eb",
+        "68d0b2e9d97dcd77a72ebe0ff935079c8b80d14a956c69d2ef1dc734b2ad4e76"
+      ],
+      "resolution": {
+        "didDocument": {
+          "@context": [
+            "https://www.w3.org/ns/did/v1",
+            "https://w3id.org/security/multikey/v1"
+          ],
+          "id": "did:btc:test:qygq-qqpq-qg2z-rt4",
+          "controller": "did:key:zQ3shTWkUhBxqWZMShdeCmD6SSTbXYbrURU6aizU5AaJzySFo",
+          "verificationMethod": [
+            {
+              "id": "did:btc:test:qygq-qqpq-qg2z-rt4#key-0",
+              "type": "Multikey",
+              "controller": "did:btc:test:qygq-qqpq-qg2z-rt4",
+              "publicKeyMultibase": "z6Mkf2K2x5YU2jLrRtGnu2mLUcuy5AtGt1RvpqzHdN9xSyzE"
+            }
+          ],
+          "authentication": [
+            "did:btc:test:qygq-qqpq-qg2z-rt4#key-0"
+          ],
+          "assertionMethod": [
+            "did:btc:test:qygq-qqpq-qg2z-rt4#key-0"
+          ],
+          "service": [
+            {
+              "id": "did:btc:test:qygq-qqpq-qg2z-rt4#demo",
+              "type": "LinkedDomains",
+              "serviceEndpoint": "https://example.com"
+            }
+          ]
+        },
+        "didResolutionMetadata": {
+          "contentType": "application/did+ld+json"
+        },
+        "didDocumentMetadata": {
+          "created": "2026-10-22T01:20:35Z",
+          "updated": "2026-10-22T01:20:36Z",
+          "versionId": "1",
+          "btc": {
+            "network": "regtest",
+            "createTxid": "8bfb33c12fc0fef64eef6632e20dcb1fc0891736b681ed277e8071cd9f1eaa8c",
+            "blockHeight": 130,
+            "txIndex": 1,
+            "versionTxid": "68d0b2e9d97dcd77a72ebe0ff935079c8b80d14a956c69d2ef1dc734b2ad4e76",
+            "confirmations": 1,
+            "didUtxo": "68d0b2e9d97dcd77a72ebe0ff935079c8b80d14a956c69d2ef1dc734b2ad4e76:0",
+            "final": false
+          }
+        }
+      }
+    },
+    {
+      "step": "verify old credential after key rotation",
+      "txids": [],
+      "credential": {
+        "label": "vc0",
+        "verified": false,
+        "reason": "signature does not verify"
+      }
+    },
+    {
+      "step": "verify credential signed with the new key-0",
+      "txids": [],
+      "credential": {
+        "label": "vc1",
+        "verified": true
+      }
+    },
+    {
+      "step": "deactivate",
+      "txids": [
+        "021f3e46ae0d4ffdda9910fb96cd14ca3756c818b634f5b75de5d975d99e1962"
+      ],
+      "resolution": {
+        "didDocument": null,
+        "didResolutionMetadata": {},
+        "didDocumentMetadata": {
+          "created": "2026-10-22T01:20:35Z",
+          "updated": "2026-10-22T01:20:36Z",
+          "versionId": "2",
+          "deactivated": true,
+          "btc": {
+            "network": "regtest",
+            "createTxid": "8bfb33c12fc0fef64eef6632e20dcb1fc0891736b681ed277e8071cd9f1eaa8c",
+            "blockHeight": 130,
+            "txIndex": 1,
+            "versionTxid": "021f3e46ae0d4ffdda9910fb96cd14ca3756c818b634f5b75de5d975d99e1962",
+            "confirmations": 1,
+            "didUtxo": null,
+            "final": false
+          }
+        }
+      }
+    },
+    {
+      "step": "verify credential after deactivation",
+      "txids": [],
+      "credential": {
+        "label": "vc1",
+        "verified": false,
+        "reason": "issuer DID is deactivated"
+      }
+    },
+    {
+      "step": "resolve version 1 after deactivation",
+      "txids": [],
+      "resolution": {
+        "didDocument": {
+          "@context": [
+            "https://www.w3.org/ns/did/v1",
+            "https://w3id.org/security/multikey/v1"
+          ],
+          "id": "did:btc:test:qygq-qqpq-qg2z-rt4",
+          "controller": "did:key:zQ3shTWkUhBxqWZMShdeCmD6SSTbXYbrURU6aizU5AaJzySFo",
+          "verificationMethod": [
+            {
+              "id": "did:btc:test:qygq-qqpq-qg2z-rt4#key-0",
+              "type": "Multikey",
+              "controller": "did:btc:test:qygq-qqpq-qg2z-rt4",
+              "publicKeyMultibase": "z6Mkf2K2x5YU2jLrRtGnu2mLUcuy5AtGt1RvpqzHdN9xSyzE"
+            }
+          ],
+          "authentication": [
+            "did:btc:test:qygq-qqpq-qg2z-rt4#key-0"
+          ],
+          "assertionMethod": [
+            "did:btc:test:qygq-qqpq-qg2z-rt4#key-0"
+          ],
+          "service": [
+            {
+              "id": "did:btc:test:qygq-qqpq-qg2z-rt4#demo",
+              "type": "LinkedDomains",
+              "serviceEndpoint": "https://example.com"
+            }
+          ]
+        },
+        "didResolutionMetadata": {
+          "contentType": "application/did+ld+json"
+        },
+        "didDocumentMetadata": {
+          "created": "2026-10-22T01:20:35Z",
+          "updated": "2026-10-22T01:20:36Z",
+          "versionId": "1",
+          "nextVersionId": "2",
+          "nextUpdate": "2026-10-22T01:20:36Z",
+          "btc": {
+            "network": "regtest",
+            "createTxid": "8bfb33c12fc0fef64eef6632e20dcb1fc0891736b681ed277e8071cd9f1eaa8c",
+            "blockHeight": 130,
+            "txIndex": 1,
+            "versionTxid": "68d0b2e9d97dcd77a72ebe0ff935079c8b80d14a956c69d2ef1dc734b2ad4e76",
+            "confirmations": 2
+          }
+        }
+      }
+    },
+    {
+      "step": "replay old reveal transaction",
+      "txids": [
+        "rejected: RPC sendrawtransaction: bad-txns-inputs-missingorspent"
+      ]
+    }
+  ]
+}
