@@ -1,5 +1,7 @@
 # did:btc resolver: a local create, update and deactivate demonstration
 
+[![Offline verification](https://github.com/RahilBhavan/did-btc-resolver/actions/workflows/ci.yml/badge.svg)](https://github.com/RahilBhavan/did-btc-resolver/actions/workflows/ci.yml)
+
 An independent TypeScript implementation of the single-DID subset of MicroStrategy Orange's Bitcoin inscription DID method. It resolves chain data into DID documents, creates Taproot transactions and demonstrates key rotation and credential signature verification. The upstream specification is an **unofficial early draft**, pinned here to commit `2c45a85f90ba5f013654351a3b0224c7f523d153`, verified October 21, 2026.
 
 ## What it does
@@ -60,8 +62,9 @@ That command requires network availability. Ordinary tests use frozen data. [Ver
 - [Scope and acceptance](docs/spec.md) — agreed local v1.
 - [Specification mapping](docs/specification.md) — implemented subset and draft ambiguities.
 - [Sources](docs/sources.md) — pinned upstream sources and recorded evidence.
-- [Correctness review](docs/review.md) — proven fix and remaining trust boundaries.
+- [Correctness review](docs/review.md) — proven fixes and remaining trust boundaries.
 - [Verification](docs/verification.md) — exact checks and trust boundaries.
+- [Publication](docs/publication.md) — fresh-clone checks and reviewed regtest receipt.
 
 ## Sources
 

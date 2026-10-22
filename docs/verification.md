@@ -38,3 +38,5 @@ On October 21, 2026 America/Detroit (October 22 UTC), a scratch copy installed w
 The credential purpose regression failed before the fix (an authentication-only proof was accepted), and passes with the assertion-purpose guard. The latest disposable Core run also printed `Restart proof: latest and historical resolutions match the pre-restart receipt`. The original frozen recordings and lifecycle receipt remain unchanged; fresh runs intentionally generate different transaction IDs.
 
 GitHub Actions uses pinned action commits, Node 26.8.1, Python 3.13.7, read-only repository permission and a 10-minute timeout. Installation uses the network; fixture restoration, typecheck and test steps use offline inputs. CI does not download or run Core and does not claim to verify the optional live Esplora API.
+
+The publication continuation also ran the same Core demo from a fresh GitHub clone. Its new transaction IDs and results are saved in `results/reviewed-regtest-lifecycle.json`; [publication.md](publication.md) records the source commit and receipt hash.

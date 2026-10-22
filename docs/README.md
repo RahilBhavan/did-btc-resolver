@@ -5,3 +5,4 @@
 - [Sources](sources.md): dates, hashes and evidence provenance.
 - [Verification](verification.md): commands, results and trust boundaries.
 - [Review](review.md): concrete correction and review coverage.
+- [Publication](publication.md): public repository and fresh-clone verification receipt.
