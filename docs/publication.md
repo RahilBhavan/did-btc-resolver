@@ -43,3 +43,7 @@ The original v1 and frozen evidence were preserved. No license was selected. No 
 ## Remaining limits
 
 The unofficial draft and supported single-DID subset remain the scope. RPC/Esplora determine chain authority, heights and spend completeness. No independent consensus-chain verifier, complete script interpreter, witness-commitment validation, batch support or reorg indexer exists. Time selection uses potentially nonmonotonic block timestamps. The credential helper checks the supported signature and assertion relationship, not identity, claim truth, expiry, status or full VC semantics. Network calls have no timeout/retry policy. See [verification.md](verification.md) and [specification.md](specification.md).
+
+## Update 2026-10-22: license
+
+The MIT license was added in `LICENSE`. It covers this project's code only. Earlier statements in this record that no license file existed describe the state at publication.

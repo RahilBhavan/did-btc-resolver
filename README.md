@@ -83,6 +83,6 @@ That command requires network availability. Ordinary tests use frozen data. [Ver
 
 ## License
 
-No license file yet. Upstream documents, vectors and dependencies retain their own rights.
+[MIT](LICENSE). The license covers this project's code only. Upstream documents, vectors and dependencies retain their own rights.
 
 Part of [Rahil Bhavan's projects](https://github.com/RahilBhavan).
