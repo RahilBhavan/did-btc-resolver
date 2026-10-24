@@ -58,3 +58,19 @@ lifecycle cases are synthetic. Prior counts above describe earlier executions.
 ## October 22 reader fixes
 
 A cold reader found that `npm run resolve -- --help` crashed with a stack trace. Every entry point now answers `--help` and rejects unknown options with a short error and usage; `test/cli.test.ts` covers this. `scripts/run-regtest.sh --keep` leaves the node running for version queries. Suite after this change: **103 discovered; offline 101 pass, 2 skipped; with the isolated Core 31.1 runner, 102 pass, 1 skipped** (live Esplora), plus the restart comparison. The three Python checks pass.
+
+### Query a past version
+
+With the `--keep` node running and its environment exported, resolve the demo DID as it was before deactivation. `--version-id 0` is the creation; each later update or deactivation adds one. `--version-time <ISO date-time>` selects by block time instead. Real output from one run, shortened with `jq`:
+
+```bash
+DID=did:btc:test:qq8q-qqpq-q0vh-38f   # use the DID that your run printed
+npm run -s resolve -- $DID --version-id 1 | jq -c '{versionId: .didDocumentMetadata.versionId, keys: [.didDocument.verificationMethod[].publicKeyMultibase], service: [.didDocument.service[].id]}'
+# {"versionId":"1","keys":["z6MkmqvGUFRTRsihD615tgkf7v7bSPACzDWaf7EX49jE6YCJ"],"service":["did:btc:test:qq8q-qqpq-q0vh-38f#demo"]}
+npm run -s resolve -- $DID --version-id 0 | jq -c '{versionId: .didDocumentMetadata.versionId, keys: [.didDocument.verificationMethod[].publicKeyMultibase]}'
+# {"versionId":"0","keys":["z6MknqFCGtxHEuHi4yQgnay89GCmgwHBKoFoVtZznMZXb2D9"]}
+npm run -s resolve -- $DID | jq -c '{deactivated: .didDocumentMetadata.deactivated, didDocument}'
+# {"deactivated":true,"didDocument":null}
+```
+
+Version 0 holds the original subject key. Version 1 holds the rotated key and the added service. The current resolution has no document, because the DID is deactivated.
