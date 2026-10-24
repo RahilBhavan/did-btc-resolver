@@ -2,7 +2,7 @@
 
 Software that writes a digital identity record into Bitcoin transactions, changes it, retires it and reads it back, on Bitcoin test networks only.
 
-[![Offline verification](https://github.com/RahilBhavan/did-btc-resolver/actions/workflows/ci.yml/badge.svg)](https://github.com/RahilBhavan/did-btc-resolver/actions/workflows/ci.yml)
+[![Offline verification](https://github.com/RahilBhavan/did-btc-resolver/actions/workflows/ci.yml/badge.svg)](https://github.com/RahilBhavan/did-btc-resolver/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 An independent TypeScript implementation of the single-DID subset of MicroStrategy Orange's Bitcoin inscription DID method. It resolves chain data into DID documents, creates Taproot transactions and demonstrates key rotation and credential signature verification. The upstream specification is an **unofficial early draft**, pinned here to commit `2c45a85f90ba5f013654351a3b0224c7f523d153`, verified October 21, 2026.
 
@@ -73,21 +73,7 @@ Without `--keep`, the script stops the node and deletes its data. With `--keep`,
 
 The DID prints as `did:btc:test:q…`. The draft defines only `did:btc:` (mainnet) and `did:btc:test:` (testnet). This project reuses the `test:` prefix for regtest and marks the network in the TxRef. Regtest TxRefs start with `q` or `p`, testnet TxRefs with `x` or `8` (see the [glossary](docs/glossary.md)).
 
-### Query a past version
-
-With the `--keep` node running and its environment exported, resolve the demo DID as it was before deactivation. `--version-id 0` is the creation; each later update or deactivation adds one. `--version-time <ISO date-time>` selects by block time instead. Real output from one run, shortened with `jq`:
-
-```bash
-DID=did:btc:test:qq8q-qqpq-q0vh-38f   # use the DID that your run printed
-npm run -s resolve -- $DID --version-id 1 | jq -c '{versionId: .didDocumentMetadata.versionId, keys: [.didDocument.verificationMethod[].publicKeyMultibase], service: [.didDocument.service[].id]}'
-# {"versionId":"1","keys":["z6MkmqvGUFRTRsihD615tgkf7v7bSPACzDWaf7EX49jE6YCJ"],"service":["did:btc:test:qq8q-qqpq-q0vh-38f#demo"]}
-npm run -s resolve -- $DID --version-id 0 | jq -c '{versionId: .didDocumentMetadata.versionId, keys: [.didDocument.verificationMethod[].publicKeyMultibase]}'
-# {"versionId":"0","keys":["z6MknqFCGtxHEuHi4yQgnay89GCmgwHBKoFoVtZznMZXb2D9"]}
-npm run -s resolve -- $DID | jq -c '{deactivated: .didDocumentMetadata.deactivated, didDocument}'
-# {"deactivated":true,"didDocument":null}
-```
-
-Version 0 holds the original subject key. Version 1 holds the rotated key and the added service. The current resolution has no document, because the DID is deactivated.
+Resolving a past version (`--version-id`, `--version-time`) is shown in [verification](docs/verification.md#query-a-past-version).
 
 ### Public testnet example
 
@@ -129,6 +115,7 @@ That command requires network availability. Ordinary tests use frozen data. [Ver
 ## Scope and limits
 
 - Independent local demonstration. No affiliation with Strategy, no Orange product integration, conformance certification, security audit, mainnet use or monetary activity.
+- CI runs the offline suite only. The regtest receipt in `results/` is a saved Bitcoin Core 31.1 run from 2026-10-22; it was not rerun for this edit.
 - Batch create/update/deactivate is unsupported. Regtest TxRefs are a local extension, not part of the draft.
 - RPC/Esplora choose the chain, height and spend completeness. The resolver does not validate the header chain, difficulty or most work, and has no general Bitcoin script interpreter.
 - Creator handles the demo's single-key Taproot paths, not arbitrary multisig controllers. Reorganizations and long-running indexing/recovery are outside v1.
