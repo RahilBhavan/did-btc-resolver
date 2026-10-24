@@ -7,7 +7,7 @@ import { createDid, update } from './support/scenario.ts';
 
 const bytes = (hex: string) => Uint8Array.from(Buffer.from(hex, 'hex'));
 
-it('decodes the pinned Orange draft creation script against its published key and flags', () => {
+it('decodes the pinned MicroStrategy did:btc draft creation script against its published key and flags', () => {
   // Independent source bytes, NOT output from buildCreationScript. Draft §Create,
   // commit 2c45a85f90ba5f013654351a3b0224c7f523d153, read 2026-10-22.
   const tx = new Transaction();

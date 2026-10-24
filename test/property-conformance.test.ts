@@ -3,7 +3,7 @@ import { describe, it } from 'node:test';
 import { resolve } from '../src/resolver.ts';
 import { createDid, deactivate, edKey, update } from './support/scenario.ts';
 
-// Synthetic signed chains, not independent Orange implementation vectors.
+// Synthetic signed chains, not independent draft-author implementation vectors.
 describe('JSON own-property update semantics', () => {
   for (const name of ['toString', 'constructor', '__proto__']) {
     it(`adds, updates and deletes the own property ${name} without changing prototypes`, async () => {

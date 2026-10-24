@@ -1,6 +1,6 @@
 # Conformance improvement: property updates and revocation
 
-Scope (2026-10-22): preserve the existing unofficial Orange draft subset while
+Scope (2026-10-22): preserve the existing unofficial MicroStrategy did:btc draft subset while
 making generic document-property updates act on JSON own properties, and recognizing
 deactivation by its decoded one-byte payload rather than one serialization.
 No glossary or ADR directory exists in this checkout; terminology and decisions are
@@ -65,7 +65,7 @@ BITCOIN_BIN=/path/to/bitcoin-31.1/bin bash scripts/run-regtest.sh > .scratch/lif
 
 ## Evidence and limits
 
-Re-read on 2026-10-22: [pinned Orange draft §Create, §Update and §Deactivate](https://github.com/MicroStrategy/did-btc-spec/blob/2c45a85f90ba5f013654351a3b0224c7f523d153/index.html).
+Re-read on 2026-10-22: [pinned MicroStrategy did:btc draft §Create, §Update and §Deactivate](https://github.com/MicroStrategy/did-btc-spec/blob/2c45a85f90ba5f013654351a3b0224c7f523d153/index.html).
 The fixed creation ScriptPubKey, expected Ed25519 bytes and flags in
 `test/wire-conformance.test.ts` come directly from §Create, independently of this
 project's builder. This adds a focused known-answer assertion to the same upstream
@@ -78,7 +78,7 @@ alternative push encodings is our interpretation of that rule, informed by
 [Core 31.1's GetScriptOp decoder](https://github.com/bitcoin/bitcoin/blob/v31.1/src/script/script.cpp).
 The encoding cases are synthetic, not upstream-published vectors or evidence of
 mempool acceptance. The creator still emits the minimal encoding. No new
-independently published Orange update/revocation lifecycle fixture was established
+independently published update/revocation lifecycle fixture was established
 by this source review; such a fixture with raw transactions, chain context and
 expected documents remains the input needed for independent lifecycle comparison.
 
