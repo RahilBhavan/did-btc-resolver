@@ -28,7 +28,10 @@ A frozen real testnet3 recording replays the draft's published creation transact
 
 The real Core integration asserts successful creation and update resolutions, subject-key rotation, deactivation, old/new credential verification outcomes `[true,false,true,false]`, readable history after deactivation and node rejection of an old confirmed reveal transaction. Saved `results/regtest-lifecycle.json` contains the receipt and transaction IDs. No wallet secret or RPC credential is stored there.
 
-## Limits
+## Re-run on 2026-10-24
+
+Bitcoin Core 31.1 (Linux x86_64) was downloaded to a scratch folder with `scripts/install-bitcoin-core.sh`, which checks the SHA-256 against the official `SHA256SUMS` and a pinned hash. `bash scripts/run-regtest.sh --keep` then passed: 103 tests discovered, 102 pass, 1 skipped (live Esplora), restart proof matched. `npm run demo` ran inside that script, and `npm run resolve -- <did> --version-id 1` returned version 1 with the service entry. Offline: 103 discovered, 101 pass, 2 skipped; typecheck and the three Python tests pass. The CI `regtest` job runs the same script; it has not yet run on GitHub.
+
 
 No public-network lifecycle was broadcast; no public-network funds were used. No independent most-work/header-chain validation, complete Bitcoin interpreter, batch conformance, arbitrary controller scripts, witness-commitment audit, reorg service or credential semantic/status/expiry validation was exercised. Typechecking and vector agreement are not a security audit. The reference draft itself is unofficial and contains documented inconsistencies.
 

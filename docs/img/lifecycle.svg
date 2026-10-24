@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="456" viewBox="0 0 1100 456" role="img" aria-labelledby="t d">
+<title id="t">did:btc lifecycle on Bitcoin Core 31.1 regtest</title>
+<desc id="d">Nine steps from the saved receipt: create, credential check, update with key rotation, old credential rejected, new credential accepted, deactivate, credential rejected after deactivation, version 1 still resolves, replayed transaction rejected by the node.</desc>
+<rect width="1100" height="456" rx="10" fill="#111214"/>
+<rect x="0" y="0" width="1100" height="48" rx="10" fill="#202124"/><rect x="0" y="30" width="1100" height="18" fill="#202124"/>
+<text x="24" y="31" font-family="ui-monospace, 'DejaVu Sans Mono', 'Liberation Mono', Menlo, Consolas, monospace" font-size="15" fill="#F5F5EF">npm run demo</text>
+<text x="1076" y="31" text-anchor="end" font-family="ui-monospace, 'DejaVu Sans Mono', 'Liberation Mono', Menlo, Consolas, monospace" font-size="13" fill="#B7B8B1">Bitcoin Core 31.1 regtest, saved receipt of 2026-10-22</text>
+<text x="24" y="74" font-family="ui-monospace, 'DejaVu Sans Mono', 'Liberation Mono', Menlo, Consolas, monospace" font-size="15" fill="#FFE500">did:btc:test:qygq-qqpq-qg2z-rt4</text>
+<text x="24" y="110" font-family="ui-monospace, 'DejaVu Sans Mono', 'Liberation Mono', Menlo, Consolas, monospace" font-size="15" font-weight="700" fill="#F5F5EF">create</text>
+<text x="270" y="110" font-family="ui-monospace, 'DejaVu Sans Mono', 'Liberation Mono', Menlo, Consolas, monospace" font-size="14" fill="#B7B8B1">tx 8bfb33c1…</text>
+<text x="640" y="110" font-family="ui-monospace, 'DejaVu Sans Mono', 'Liberation Mono', Menlo, Consolas, monospace" font-size="14" fill="#B8E3BF">version 0, block 130</text>
+<text x="24" y="144" font-family="ui-monospace, 'DejaVu Sans Mono', 'Liberation Mono', Menlo, Consolas, monospace" font-size="15" font-weight="700" fill="#F5F5EF">credential vc0</text>
+<text x="270" y="144" font-family="ui-monospace, 'DejaVu Sans Mono', 'Liberation Mono', Menlo, Consolas, monospace" font-size="14" fill="#B7B8B1">signed with key-0</text>
+<text x="640" y="144" font-family="ui-monospace, 'DejaVu Sans Mono', 'Liberation Mono', Menlo, Consolas, monospace" font-size="14" fill="#B8E3BF">verified: true</text>
+<text x="24" y="178" font-family="ui-monospace, 'DejaVu Sans Mono', 'Liberation Mono', Menlo, Consolas, monospace" font-size="15" font-weight="700" fill="#F5F5EF">update</text>
+<text x="270" y="178" font-family="ui-monospace, 'DejaVu Sans Mono', 'Liberation Mono', Menlo, Consolas, monospace" font-size="14" fill="#B7B8B1">commit a24f7ce4… reveal 68d0b2e9…</text>
+<text x="640" y="178" font-family="ui-monospace, 'DejaVu Sans Mono', 'Liberation Mono', Menlo, Consolas, monospace" font-size="14" fill="#B8E3BF">version 1, key rotated</text>
+<text x="24" y="212" font-family="ui-monospace, 'DejaVu Sans Mono', 'Liberation Mono', Menlo, Consolas, monospace" font-size="15" font-weight="700" fill="#F5F5EF">credential vc0</text>
+<text x="270" y="212" font-family="ui-monospace, 'DejaVu Sans Mono', 'Liberation Mono', Menlo, Consolas, monospace" font-size="14" fill="#B7B8B1">after key rotation</text>
+<text x="640" y="212" font-family="ui-monospace, 'DejaVu Sans Mono', 'Liberation Mono', Menlo, Consolas, monospace" font-size="14" fill="#B8E3BF">verified: false (signature does not verify)</text>
+<text x="24" y="246" font-family="ui-monospace, 'DejaVu Sans Mono', 'Liberation Mono', Menlo, Consolas, monospace" font-size="15" font-weight="700" fill="#F5F5EF">credential vc1</text>
+<text x="270" y="246" font-family="ui-monospace, 'DejaVu Sans Mono', 'Liberation Mono', Menlo, Consolas, monospace" font-size="14" fill="#B7B8B1">signed with new key-0</text>
+<text x="640" y="246" font-family="ui-monospace, 'DejaVu Sans Mono', 'Liberation Mono', Menlo, Consolas, monospace" font-size="14" fill="#B8E3BF">verified: true</text>
+<text x="24" y="280" font-family="ui-monospace, 'DejaVu Sans Mono', 'Liberation Mono', Menlo, Consolas, monospace" font-size="15" font-weight="700" fill="#F5F5EF">deactivate</text>
+<text x="270" y="280" font-family="ui-monospace, 'DejaVu Sans Mono', 'Liberation Mono', Menlo, Consolas, monospace" font-size="14" fill="#B7B8B1">tx 021f3e46…</text>
+<text x="640" y="280" font-family="ui-monospace, 'DejaVu Sans Mono', 'Liberation Mono', Menlo, Consolas, monospace" font-size="14" fill="#B8E3BF">version 2, deactivated: true</text>
+<text x="24" y="314" font-family="ui-monospace, 'DejaVu Sans Mono', 'Liberation Mono', Menlo, Consolas, monospace" font-size="15" font-weight="700" fill="#F5F5EF">credential vc1</text>
+<text x="270" y="314" font-family="ui-monospace, 'DejaVu Sans Mono', 'Liberation Mono', Menlo, Consolas, monospace" font-size="14" fill="#B7B8B1">after deactivation</text>
+<text x="640" y="314" font-family="ui-monospace, 'DejaVu Sans Mono', 'Liberation Mono', Menlo, Consolas, monospace" font-size="14" fill="#B8E3BF">verified: false (issuer DID is deactivated)</text>
+<text x="24" y="348" font-family="ui-monospace, 'DejaVu Sans Mono', 'Liberation Mono', Menlo, Consolas, monospace" font-size="15" font-weight="700" fill="#F5F5EF">resolve --version-id 1</text>
+<text x="270" y="348" font-family="ui-monospace, 'DejaVu Sans Mono', 'Liberation Mono', Menlo, Consolas, monospace" font-size="14" fill="#B7B8B1">after deactivation</text>
+<text x="640" y="348" font-family="ui-monospace, 'DejaVu Sans Mono', 'Liberation Mono', Menlo, Consolas, monospace" font-size="14" fill="#B8E3BF">still resolves, version 1</text>
+<text x="24" y="382" font-family="ui-monospace, 'DejaVu Sans Mono', 'Liberation Mono', Menlo, Consolas, monospace" font-size="15" font-weight="700" fill="#F5F5EF">replay old reveal tx</text>
+<text x="270" y="382" font-family="ui-monospace, 'DejaVu Sans Mono', 'Liberation Mono', Menlo, Consolas, monospace" font-size="14" fill="#B7B8B1">sent to the node</text>
+<text x="640" y="382" font-family="ui-monospace, 'DejaVu Sans Mono', 'Liberation Mono', Menlo, Consolas, monospace" font-size="14" fill="#B8E3BF">rejected: bad-txns-inputs-missingorspent</text>
+<text x="24" y="436" font-family="ui-monospace, 'DejaVu Sans Mono', 'Liberation Mono', Menlo, Consolas, monospace" font-size="12.5" fill="#B7B8B1">Every line is the asserted outcome; verified: false and rejected are checks that must fail. Local regtest only, not public-network proof.</text>
+</svg>
