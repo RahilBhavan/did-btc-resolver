@@ -1,4 +1,4 @@
-name: Offline verification
+name: CI
 on:
   push:
   pull_request:
@@ -23,3 +23,22 @@ jobs:
       - run: python3 -m unittest discover -s test -p '*_test.py' -v
       - run: npm run typecheck
       - run: npm test
+  regtest:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '26.8.1'
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.13.7'
+      - run: npm ci
+      - run: python3 scripts/restore_data.py
+      - name: Install Bitcoin Core 31.1 (SHA-256 checked)
+        run: echo "BITCOIN_BIN=$(bash scripts/install-bitcoin-core.sh "$RUNNER_TEMP/bitcoin-core")" >> "$GITHUB_ENV"
+      - name: Regtest tests, lifecycle demo and restart check
+        run: bash scripts/run-regtest.sh > "$RUNNER_TEMP/lifecycle.json"
