@@ -2,9 +2,11 @@
 
 Software that writes a digital identity record into Bitcoin transactions, changes it, retires it and reads it back, on Bitcoin test networks only.
 
-[![Offline verification](https://github.com/RahilBhavan/did-btc-resolver/actions/workflows/ci.yml/badge.svg)](https://github.com/RahilBhavan/did-btc-resolver/actions/workflows/ci.yml)
+[![CI](https://github.com/RahilBhavan/did-btc-resolver/actions/workflows/ci.yml/badge.svg)](https://github.com/RahilBhavan/did-btc-resolver/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-An independent TypeScript implementation of the single-DID subset of MicroStrategy Orange's Bitcoin inscription DID method. It resolves chain data into DID documents, creates Taproot transactions and demonstrates key rotation and credential signature verification. The upstream specification is an **unofficial early draft**, pinned here to commit `2c45a85f90ba5f013654351a3b0224c7f523d153`, verified October 21, 2026.
+![Terminal-style rendering of the saved regtest receipt: create, update with key rotation, deactivate, and the checks that must fail, such as the old credential after rotation and a replayed transaction.](docs/img/lifecycle.svg)
+
+An independent TypeScript implementation of the single-DID subset of the `did:btc` method in MicroStrategy's draft specification. It resolves chain data into DID documents, creates Taproot transactions and demonstrates key rotation and credential signature verification. The upstream specification is an **unofficial early draft**, pinned here to commit `2c45a85f90ba5f013654351a3b0224c7f523d153`, verified October 21, 2026.
 
 **Why it matters.** A did:btc identifier is controlled by whoever holds the key for one Bitcoin output, the DID-UTXO. Every update and the deactivation must spend that output, and Bitcoin's Taproot rules (BIP-341) let only the key holder spend it, so no registry operator can change the record. The identifier names the block height and position of its creation transaction. A verifier can therefore recompute each transaction ID, check each block header's proof of work and Merkle root, and check the signature on each spend. With their own Bitcoin Core node, a verifier needs no other server. With a remote provider, the verifier still trusts it to report the real chain and every spend.
 
@@ -40,11 +42,11 @@ flowchart TD
   D -.-> R3["versionId 2<br/>didDocument: null, deactivated: true<br/>versions 0 and 1 still resolve by versionId"]
 ```
 
-The resolver reads the TxRef in the DID to find the creation block and transaction position. It checks that block and transaction, and by default requires 6 confirmations of the creation (spec §Create). It then asks the chain source which confirmed transaction spent the DID-UTXO, checks that spend, and repeats until the output is unspent or the DID is deactivated. A spend with a signed envelope adds a version. A spend without one, such as the commit, moves control without adding a version. A malformed envelope is skipped and listed under `didDocumentMetadata.btc.ignoredUpdates`. A DID created without output 1 is final: it has no DID-UTXO, so it cannot be updated or deactivated.
+The resolver reads the TxRef in the DID to find the creation block and transaction, and by default requires 6 confirmations (spec §Create). It then asks the chain source which confirmed transaction spent the DID-UTXO, checks that spend, and repeats until the output is unspent or the DID is deactivated. A spend with a signed envelope adds a version. A spend without one, such as the commit, moves control without adding a version. A malformed envelope is skipped and listed under `didDocumentMetadata.btc.ignoredUpdates`. A DID created without output 1 is final.
 
 ## Run it
 
-Tested with Node 26.8.1 and TypeScript 7.0.2; Node 24+ is required for direct TypeScript execution. Python 3 (standard library only) runs `scripts/restore_data.py`. The recorded chain fixtures are stored gzip-compressed and split into parts in `data/frozen/`, because a pre-commit hook keeps every committed file under 20,000 bytes. The script joins and unpacks them into `test/fixtures/` and checks their SHA-256. Run it before `npm test`.
+Tested with Node 26.8.1 and TypeScript 7.0.2; Node 24+ is required for direct TypeScript execution. Python 3 (standard library only) runs `scripts/restore_data.py`, which joins the gzip-compressed fixture parts in `data/frozen/` into `test/fixtures/` and checks their SHA-256. Run it before `npm test`.
 
 ```bash
 git clone https://github.com/RahilBhavan/did-btc-resolver.git
@@ -60,45 +62,14 @@ Every entry point prints its usage with `--help`, for example `npm run resolve -
 
 ### Regtest demo
 
-Get [Bitcoin Core 31.1](https://bitcoincore.org/en/releases/31.1/) and verify its download checksums. Set `BITCOIN_BIN` to the extracted `bin` directory:
+Get [Bitcoin Core 31.1](https://bitcoincore.org/en/releases/31.1/) and verify its checksums (CI does this on every run). Set `BITCOIN_BIN` to the extracted `bin` directory:
 
 ```bash
 mkdir -p .scratch
 BITCOIN_BIN=/path/to/bitcoin-31.1/bin bash scripts/run-regtest.sh --keep > .scratch/lifecycle.json
 ```
 
-The script starts a regtest node in `.scratch/` (git-ignored) on loopback port 18643 with P2P disabled. It runs the regtest tests, then `npm run demo`. The demo creates a DID, checks a credential signature, rotates the subject key in an update, deactivates the DID, checks that replaying an old transaction is rejected and prints each step as JSON. Then it restarts the node and checks current and historical resolution again. It mines test coins only. Port 18643 must be free. Fresh random keys and block timestamps make transaction IDs differ between runs. The lifecycle assertions are the same every run.
-
-Without `--keep`, the script stops the node and deletes its data. With `--keep`, the node stays up and the script prints the environment for `npm run resolve` and the command that stops the node. `npm run demo` also runs on its own against a regtest node started with `txindex=1` and `txospenderindex=1` (it creates its own wallet), given `DID_BTC_RPC_URL`, `DID_BTC_RPC_USER` and `DID_BTC_RPC_PASSWORD`.
-
-The DID prints as `did:btc:test:q…`. The draft defines only `did:btc:` (mainnet) and `did:btc:test:` (testnet). This project reuses the `test:` prefix for regtest and marks the network in the TxRef. Regtest TxRefs start with `q` or `p`, testnet TxRefs with `x` or `8` (see the [glossary](docs/glossary.md)).
-
-### Query a past version
-
-With the `--keep` node running and its environment exported, resolve the demo DID as it was before deactivation. `--version-id 0` is the creation; each later update or deactivation adds one. `--version-time <ISO date-time>` selects by block time instead. Real output from one run, shortened with `jq`:
-
-```bash
-DID=did:btc:test:qq8q-qqpq-q0vh-38f   # use the DID that your run printed
-npm run -s resolve -- $DID --version-id 1 | jq -c '{versionId: .didDocumentMetadata.versionId, keys: [.didDocument.verificationMethod[].publicKeyMultibase], service: [.didDocument.service[].id]}'
-# {"versionId":"1","keys":["z6MkmqvGUFRTRsihD615tgkf7v7bSPACzDWaf7EX49jE6YCJ"],"service":["did:btc:test:qq8q-qqpq-q0vh-38f#demo"]}
-npm run -s resolve -- $DID --version-id 0 | jq -c '{versionId: .didDocumentMetadata.versionId, keys: [.didDocument.verificationMethod[].publicKeyMultibase]}'
-# {"versionId":"0","keys":["z6MknqFCGtxHEuHi4yQgnay89GCmgwHBKoFoVtZznMZXb2D9"]}
-npm run -s resolve -- $DID | jq -c '{deactivated: .didDocumentMetadata.deactivated, didDocument}'
-# {"deactivated":true,"didDocument":null}
-```
-
-Version 0 holds the original subject key. Version 1 holds the rotated key and the added service. The current resolution has no document, because the DID is deactivated.
-
-### Public testnet example
-
-To resolve the upstream public testnet example read-only:
-
-```bash
-npm run resolve -- did:btc:test:xuh5-ayyy-q3q0-kp0 \
-  --esplora https://blockstream.info/testnet/api --network testnet
-```
-
-That command requires network availability. Ordinary tests use frozen data. [Verification](docs/verification.md) distinguishes offline vectors from live evidence.
+The script starts a regtest node in `.scratch/` (git-ignored) on loopback port 18643 with P2P disabled, runs the regtest tests and `npm run demo`, restarts the node and checks current and historical resolution again. It mines test coins only. Details, `--keep` behaviour, the regtest DID prefix and the public testnet example are in [docs/run.md](docs/run.md).
 
 ## Repository layout
 
@@ -108,11 +79,12 @@ That command requires network availability. Ordinary tests use frozen data. [Ver
 - `results/`: node-confirmed lifecycle receipt, with no keys or RPC credentials.
 - `scripts/`: snapshot restoration, source recording and disposable regtest runner.
 - `.scratch/`: git-ignored regtest node data and test temporaries, created on demand.
-- `docs/`: scope, spec mapping, sources and verification.
+- `docs/`: scope, spec mapping, sources and verification; `docs/img/lifecycle.svg` is the hero, rendered by `scripts/render-hero.ts`.
+- `DESIGN.md`, `design/`: the visual design system used for the hero ([Rahil Design 3.3.0](DESIGN.md)).
+- `AGENTS.md`, `CLAUDE.md`: agent workflow files for the author's coding agents; not needed to use the code.
 
 ## Documentation
 
-- [Public design system](DESIGN.md): Rahil Design 3.3.0, shared tokens and visual review rules.
 - [Glossary](docs/glossary.md): TxRef, OP_RETURN subject key, DID-UTXO, versions and the regtest DID convention.
 - [Scope and acceptance](docs/spec.md): agreed local v1.
 - [Specification mapping](docs/specification.md): implemented subset and draft ambiguities.
@@ -128,7 +100,8 @@ That command requires network availability. Ordinary tests use frozen data. [Ver
 
 ## Scope and limits
 
-- Independent local demonstration. No affiliation with Strategy, no Orange product integration, conformance certification, security audit, mainnet use or monetary activity.
+- Independent local demonstration. No affiliation with Strategy, no MicroStrategy product integration, conformance certification, security audit, mainnet use or monetary activity.
+- CI has two jobs: the offline suite, and a regtest job that downloads Bitcoin Core 31.1, checks its SHA-256 (not its GPG signature), then runs the regtest tests and lifecycle demo. The receipt in `results/` is a saved 2026-10-22 run; a local re-run on 2026-10-24 passed (102 pass, 1 live-Esplora test skipped).
 - Batch create/update/deactivate is unsupported. Regtest TxRefs are a local extension, not part of the draft.
 - RPC/Esplora choose the chain, height and spend completeness. The resolver does not validate the header chain, difficulty or most work, and has no general Bitcoin script interpreter.
 - Creator handles the demo's single-key Taproot paths, not arbitrary multisig controllers. Reorganizations and long-running indexing/recovery are outside v1.

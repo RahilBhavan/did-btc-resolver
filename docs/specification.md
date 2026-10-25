@@ -1,8 +1,8 @@
 # Specification mapping and deliberate limits
 
-Purpose: identify the actual Orange method draft and the implemented subset.
+Purpose: identify the MicroStrategy did:btc method draft and the implemented subset.
 
-The primary source is [MicroStrategy/did-btc-spec](https://github.com/MicroStrategy/did-btc-spec), commit `2c45a85f90ba5f013654351a3b0224c7f523d153` (August 22, 2024). `git ls-remote` on October 21, 2026 returned that HEAD. Its ReSpec `specStatus` is `unofficial`; its README calls it an early draft. It has no stable normative version number used by this implementation. Do not call it a finalized Orange standard or confuse it with `did:btcr`, `did:ion` or `did:btco`.
+The primary source is [MicroStrategy/did-btc-spec](https://github.com/MicroStrategy/did-btc-spec), commit `2c45a85f90ba5f013654351a3b0224c7f523d153` (August 22, 2024). `git ls-remote` on October 21, 2026 returned that HEAD. Its ReSpec `specStatus` is `unofficial`; its README calls it an early draft. It has no stable normative version number used by this implementation. Do not call it a finalized standard or confuse it with `did:btcr`, `did:ion` or `did:btco`.
 
 ## Single-DID operations
 

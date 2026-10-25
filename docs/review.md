@@ -27,7 +27,7 @@ Independent task reference: `did-btc-review-1` (completed read-only against `78b
 
 ## Source and evidence boundaries
 
-The [pinned unofficial Orange draft](https://github.com/MicroStrategy/did-btc-spec/blob/2c45a85f90ba5f013654351a3b0224c7f523d153/index.html) was re-read during this review. Its read, update and deactivation procedures support the documented single-DID scope; batch formats and draft inconsistencies remain explicit in [specification.md](specification.md). This continuation did not change the frozen source observation dates or claim a newer protocol version.
+The [pinned unofficial MicroStrategy did:btc draft](https://github.com/MicroStrategy/did-btc-spec/blob/2c45a85f90ba5f013654351a3b0224c7f523d153/index.html) was re-read during this review. Its read, update and deactivation procedures support the documented single-DID scope; batch formats and draft inconsistencies remain explicit in [specification.md](specification.md). This continuation did not change the frozen source observation dates or claim a newer protocol version.
 
 The RPC/Esplora provider remains authority for chain selection, height and spend completeness. Supported hash/signature checks do not prove canonical-chain membership, arbitrary script validity or witness commitment inclusion. Reorg/index recovery and historical credential acceptance policies remain outside v1. Unsupported script paths can be followed for controller movement based on provider-confirmed spends; this is not a full script interpreter.
 

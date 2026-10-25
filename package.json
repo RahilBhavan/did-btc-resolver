@@ -2,7 +2,7 @@
   "name": "did-btc-resolver",
   "version": "0.1.0",
   "private": true,
-  "description": "Independent did:btc (MicroStrategy draft spec) resolver, creator and credential verifier for Bitcoin test networks",
+  "description": "did:btc resolver, creator and credential demo for Bitcoin regtest and testnet, following MicroStrategy's unofficial draft spec",
   "type": "module",
   "engines": {
     "node": ">=24"
